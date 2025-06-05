@@ -22,14 +22,13 @@ cd mcp-mysql
 
 2. Instala uv (si no lo tienes):
 
-```bash
-pipx install uv  # o cargo install uv
-```
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 3. Crea el entorno virtual y sincroniza dependencias:
 
 ```bash
 uv venv
+uv sync
 ```
 
 4. ¡Listo! El entorno ya tiene todo lo que necesitas:
