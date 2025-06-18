@@ -1,72 +1,179 @@
-# MCP MySQL
+# MCP MySQL Server
 
-Un servidor MCP (Model Context Protocol) para MySQL basado en el [SDK oficial de MCP](https://github.com/modelcontextprotocol/python-sdk).
+An MCP (Model Context Protocol) server for MySQL that allows secure and standardized interaction with MySQL databases. Based on the [official MCP SDK](https://github.com/modelcontextprotocol/python-sdk).
 
-## Estado Actual
+## Features
 
-Este proyecto está en fase inicial, implementando el ejemplo básico del tutorial de MCP. El objetivo es crear un servidor MCP que permita interactuar con bases de datos MySQL de manera segura y estandarizada.
+- ✅ Secure MySQL connection using PyMySQL
+- ✅ Database table listing
+- ✅ Robust error handling and timeouts
+- ✅ Environment variable configuration
+- ✅ Compatible with standard MCP protocol
 
-## Requisitos
+## Requirements
 
 - Python >= 3.12
-- [uv](https://github.com/astral-sh/uv) (gestor de paquetes Python)
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
+- MySQL server running
 
-## Instalación
+## Installation
 
-1. Clona el repositorio:
+1. **Clone the repository:**
 
 ```bash
 git clone https://github.com/xcladev/mcp-mysql.git
 cd mcp-mysql
 ```
 
-2. Instala uv (si no lo tienes):
+2. **Install uv (if you don't have it):**
 
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-3. Crea el entorno virtual y sincroniza dependencias:
+3. **Create virtual environment and sync dependencies:**
 
 ```bash
 uv venv
 uv sync
 ```
 
-4. ¡Listo! El entorno ya tiene todo lo que necesitas:
+4. **Configure environment variables:**
+   Create a `.env` file in the project root:
+
+```env
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=your_password_here
+MYSQL_DATABASE=your_database_name
+```
+
+5. **Ready! Run the server:**
 
 ```bash
+cd src
 mcp run server.py
 ```
 
-## Ejemplo Actual
+## Available Tools
 
-El servidor actual implementa un ejemplo básico con dos funcionalidades:
+### `list_tables`
 
-1. Una herramienta de suma:
+Lists all available tables in the MySQL database.
+
+**Parameters:** None
+
+**Returns:** List of table names
+
+**Usage example:**
+
+```python
+# The MCP client can call this tool to get
+# all tables from the configured database
+```
+
+## Project Structure
+
+```
+mcp-mysql/
+├── src/
+│   ├── server.py          # Main MCP server
+│   ├── tools.py           # Tool definitions
+│   └── utils/
+│       └── helper.py      # MySQL connection utilities
+├── .env                   # Environment variables (not included in Git)
+├── pyproject.toml         # Project configuration
+└── README.md             # This file
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable         | Description       | Default Value |
+| ---------------- | ----------------- | ------------- |
+| `MYSQL_HOST`     | MySQL server host | `localhost`   |
+| `MYSQL_PORT`     | MySQL server port | `3306`        |
+| `MYSQL_USER`     | MySQL user        | -             |
+| `MYSQL_PASSWORD` | User password     | -             |
+| `MYSQL_DATABASE` | Database name     | -             |
+
+### MySQL Configuration
+
+Make sure your MySQL server is properly configured:
+
+1. **MySQL running** on the specified port
+2. **User with permissions** to access the database
+3. **Existing database** specified in `MYSQL_DATABASE`
+
+## Development
+
+### Adding New Tools
+
+1. **Define the function in `src/tools.py`:**
+
+```python
+def new_tool(parameter: str) -> str:
+    """Tool description."""
+    # Implementation
+    return result
+```
+
+2. **Create the MCP tool:**
+
+```python
+new_tool_tool = Tool(
+    name="new_tool",
+    description="Tool description.",
+    inputSchema={
+        "type": "object",
+        "properties": {
+            "parameter": {
+                "type": "string",
+                "description": "Parameter description"
+            }
+        },
+        "required": ["parameter"]
+    },
+    function=new_tool
+)
+```
+
+3. **Register the tool in `src/server.py`:**
 
 ```python
 @mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers"""
-    return a + b
+def new_tool(parameter: str) -> str:
+    """Tool description."""
+    return new_tool_tool.function(parameter)
 ```
 
-2. Un recurso de saludo dinámico:
+## Next Steps
 
-```python
-@mcp.resource("greeting://{name}")
-def get_greeting(name: str) -> str:
-    """Get a personalized greeting"""
-    return f"Hello, {name}!"
-```
+- [*] Implement SQL query execution tool
+- [ ] Add transaction management
+- [ ] Implement query validation
+- [ ] Add schema management tools
+- [ ] Implement query caching
+- [ ] Add support for multiple connections
 
-## Próximos Pasos
+## Troubleshooting
 
-- [ ] Implementar conexión a MySQL
-- [ ] Añadir herramientas para consultas SQL
-- [ ] Implementar gestión de transacciones
-- [ ] Añadir validación de consultas
-- [ ] Implementar manejo de errores
+### Connection Error
 
-## Licencia
+If you get connection errors, verify:
 
-Este proyecto está licenciado bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+- Credentials in the `.env` file
+- MySQL is running
+- User has permissions for the database
+
+### Timeout Error
+
+If queries take too long:
+
+- Check MySQL configuration
+- Consider optimizing queries
+- Review network configuration
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
