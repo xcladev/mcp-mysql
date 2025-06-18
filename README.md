@@ -149,7 +149,6 @@ def new_tool(parameter: str) -> str:
 
 ## Next Steps
 
-- [*] Implement SQL query execution tool
 - [ ] Add transaction management
 - [ ] Implement query validation
 - [ ] Add schema management tools
