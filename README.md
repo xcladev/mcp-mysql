@@ -2,10 +2,13 @@
 
 An MCP (Model Context Protocol) server for MySQL that allows secure and standardized interaction with MySQL databases. Based on the [official MCP SDK](https://github.com/modelcontextprotocol/python-sdk).
 
+> **Note:** This MCP server was originally developed to address my own needs and to explore the use of the Model Context Protocol (MCP). However, it is open and freely available for anyone who has similar requirements or wants to experiment with MCP and MySQL integration.
+
 ## Features
 
 - ✅ Secure MySQL connection using PyMySQL
-- ✅ Database table listing
+- ✅ Database table and schema inspection
+- ✅ User table querying (application users, not MySQL system users)
 - ✅ Robust error handling and timeouts
 - ✅ Environment variable configuration
 - ✅ Compatible with standard MCP protocol
@@ -42,7 +45,7 @@ uv sync
 ```env
 MYSQL_HOST=localhost
 MYSQL_PORT=3306
-MYSQL_USER=root
+MYSQL_USER=your_user
 MYSQL_PASSWORD=your_password_here
 MYSQL_DATABASE=your_database_name
 ```
@@ -54,22 +57,84 @@ cd src
 mcp run server.py
 ```
 
+## MCP Server Configuration Example
+
+If you want to run the MCP server with a specific configuration (for example, in a `mcp.json` or similar):
+
+```json
+{
+  "MySQL MCP Server": {
+    "command": "uv",
+    "args": [
+      "run",
+      "--directory",
+      "C:/xampp/htdocs/Projectes/mcp-mysql",
+      "python",
+      "src/server.py"
+    ],
+    "env": {
+      "MYSQL_HOST": "localhost",
+      "MYSQL_PORT": "3306",
+      "MYSQL_USER": "your_user",
+      "MYSQL_PASSWORD": "your_password",
+      "MYSQL_DATABASE": "your_database"
+    }
+  }
+}
+```
+
+Replace the environment variable values with your actual MySQL credentials and database name.
+
 ## Available Tools
 
 ### `list_tables`
 
 Lists all available tables in the MySQL database.
 
-**Parameters:** None
+- **Parameters:** None
+- **Returns:** List of table names
 
-**Returns:** List of table names
+### `describe_table`
 
-**Usage example:**
+Returns columns, types, and keys of a table.
 
-```python
-# The MCP client can call this tool to get
-# all tables from the configured database
-```
+- **Parameters:**
+  - `table` (string): Table name
+- **Returns:** List of column definitions (field, type, nullability, key, default, extra)
+
+### `get_foreign_keys`
+
+Extracts foreign key relationships for a table.
+
+- **Parameters:**
+  - `table` (string): Table name
+- **Returns:** List of foreign key relationships (column, referenced_table, referenced_column)
+
+### `get_column_names`
+
+Returns only the column names of a table.
+
+- **Parameters:**
+  - `table` (string): Table name
+- **Returns:** List of column names
+
+### `list_app_users`
+
+Lists all users from the specified application user table (e.g., `users`, `usuarios`), excluding password fields.
+
+- **Parameters:**
+  - `table` (string): Table name (e.g., `users`, `usuarios`)
+- **Returns:** List of user records (without password fields)
+
+### `get_app_user`
+
+Returns a user from the specified table by a unique field, excluding password fields.
+
+- **Parameters:**
+  - `table` (string): Table name (e.g., `users`, `usuarios`)
+  - `field` (string): Field to search by (e.g., `id`, `username`, `email`)
+  - `value` (string): Value to search for
+- **Returns:** User record (without password fields) or `null` if not found
 
 ## Project Structure
 
@@ -80,6 +145,8 @@ mcp-mysql/
 │   ├── tools.py           # Tool definitions
 │   └── utils/
 │       └── helper.py      # MySQL connection utilities
+├── tests/
+│   └── test_tools.py      # Unit tests for tools
 ├── .env                   # Environment variables (not included in Git)
 ├── pyproject.toml         # Project configuration
 └── README.md             # This file
