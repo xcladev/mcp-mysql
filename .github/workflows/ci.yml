@@ -32,4 +32,4 @@ jobs:
           MYSQL_PASSWORD: test_password
           MYSQL_DATABASE: test_db
           PYTHONPATH: src
-        run: pytest tests
+        run: PYTHONPATH=src pytest
