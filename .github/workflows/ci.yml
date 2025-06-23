@@ -26,10 +26,11 @@ jobs:
 
       - name: Run tests
         env:
+          PYTHONPATH: src
           MYSQL_HOST: 127.0.0.1
           MYSQL_PORT: 3306
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_password
           MYSQL_DATABASE: test_db
           PYTHONPATH: src
-        run: PYTHONPATH=src pytest
+        run: uv run pytest
